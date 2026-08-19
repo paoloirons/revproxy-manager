@@ -1,0 +1,34 @@
+services:
+  manager:
+    build: ./manager
+    container_name: revproxy-manager
+    environment:
+      DATA_DIR: /data
+      MANAGER_SECRET: ${MANAGER_SECRET:-}
+      SECURE_COOKIES: ${SECURE_COOKIES:-0}
+    ports:
+      - "${MANAGER_PORT:-8087}:8087"
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8087/healthz')"]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+
+  proxy:
+    build: ./runtime
+    container_name: revproxy-runtime
+    environment:
+      DATA_DIR: /data
+    ports:
+      - "${PROXY_PORT:-8080}:8080"
+    volumes:
+      - ./data:/data:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz')"]
+      interval: 15s
+      timeout: 3s
+      retries: 5

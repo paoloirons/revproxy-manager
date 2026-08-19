@@ -1,0 +1,19 @@
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /manager
+    schedule:
+      interval: weekly
+    labels: [dependencies, manager]
+
+  - package-ecosystem: pip
+    directory: /runtime
+    schedule:
+      interval: weekly
+    labels: [dependencies, runtime]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    labels: [dependencies, ci]
